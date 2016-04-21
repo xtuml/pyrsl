@@ -17,7 +17,7 @@ function install_ply {
 
 function install_pyxtuml {
     cd $TEMP_DIR
-    wget -qO - https://github.com/xtuml/pyxtuml/archive/$1.tar.gz | tar xzf -
+    wget -qO - https://github.com/keithbrown/pyxtuml/archive/$1.tar.gz | tar xzf -
 
     cd pyxtuml-*
     ln -s $2/ply ply
@@ -28,7 +28,7 @@ function install_pyxtuml {
 
 function install_pyrsl {
     cd $TEMP_DIR
-    wget -qO - https://github.com/xtuml/pyrsl/archive/$1.tar.gz | tar xzf -
+    wget -qO - https://github.com/keithbrown/pyrsl/archive/$1.tar.gz | tar xzf -
 
     cd pyrsl-*
     ln -s $2/ply ply
