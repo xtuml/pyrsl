@@ -71,82 +71,114 @@ class TestLoop(RSLTestCase):
         self.assertEqual(3, rc)
 
     def test_first_in_loop(self):
-        self.metamodel.define_class('A', [])
+        self.metamodel.define_class('A', [('ID', 'integer')])
 
         text = '''
         .select many a_set from instances of A
         .assign x = 0
         .for each a in a_set
             .if (first a_set)
-                .assign x = x + 1
+                .assign x = a.ID + x
             .end if
         .end for
         .exit x
         '''
         
-        for _ in range(0, 10):
-            self.metamodel.new('A')
+        self.metamodel.new('A', ID=42);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
             
         rc = self.eval_text(text)
-        self.assertEqual(1, rc)
+        self.assertEqual(42, rc)
 
     def test_not_first_in_loop(self):
-        self.metamodel.define_class('A', [])
+        self.metamodel.define_class('A', [('ID', 'integer')])
 
         text = '''
         .select many a_set from instances of A
         .assign x = 0
         .for each a in a_set
             .if (not_first a_set)
-                .assign x = x + 1
+                .assign x = a.ID + x
             .end if
         .end for
         .exit x
         '''
         
-        for _ in range(0, 10):
-            self.metamodel.new('A')
+        self.metamodel.new('A', ID=42);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
             
         rc = self.eval_text(text)
-        self.assertEqual(9, rc)
+        self.assertEqual(0, rc)
         
     def test_last_in_loop(self):
-        self.metamodel.define_class('A', [])
+        self.metamodel.define_class('A', [('ID', 'integer')])
 
         text = '''
         .select many a_set from instances of A
         .assign x = 0
         .for each a in a_set
             .if (last a_set)
-                .assign x = x + 1
+                .assign x = a.ID + x
             .end if
         .end for
         .exit x
         '''
         
-        for _ in range(0, 10):
-            self.metamodel.new('A')
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=1);
+        self.metamodel.new('A', ID=42);
             
         rc = self.eval_text(text)
-        self.assertEqual(1, rc)
+        self.assertEqual(42, rc)
         
     def test_not_last_in_loop(self):
-        self.metamodel.define_class('A', [])
+        self.metamodel.define_class('A', [('ID', 'integer')])
 
         text = '''
         .select many a_set from instances of A
         .assign x = 0
         .for each a in a_set
             .if (not_last a_set)
-                .assign x = x + 1
+                .assign x = a.ID + x
             .end if
         .end for
         .exit x
         '''
         
-        for _ in range(0, 10):
-            self.metamodel.new('A')
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=0);
+        self.metamodel.new('A', ID=42);
             
         rc = self.eval_text(text)
-        self.assertEqual(9, rc)
+        self.assertEqual(0, rc)
         
