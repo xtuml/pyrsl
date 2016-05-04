@@ -70,118 +70,163 @@ class TestLoop(RSLTestCase):
         rc = self.eval_text(text)
         self.assertEqual(3, rc)
 
-    def test_first_in_loop(self):
-        self.metamodel.define_class('A', [('ID', 'integer')])
+    def test_first_in_loop_count(self):
+        self.metamodel.define_class('A', [])
 
         text = '''
         .select many a_set from instances of A
         .assign x = 0
         .for each a in a_set
             .if (first a_set)
-                .assign x = a.ID + x
+                .assign x = x + 1
             .end if
         .end for
         .exit x
         '''
         
-        self.metamodel.new('A', ID=42);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-            
-        rc = self.eval_text(text)
-        self.assertEqual(42, rc)
+        for _ in range(0, 10):
+            self.metamodel.new('A')
+            rc = self.eval_text(text)
+            self.assertEqual(1, rc)
 
-    def test_not_first_in_loop(self):
-        self.metamodel.define_class('A', [('ID', 'integer')])
+    def test_not_first_in_loop_count(self):
+        self.metamodel.define_class('A', [])
 
         text = '''
         .select many a_set from instances of A
         .assign x = 0
         .for each a in a_set
             .if (not_first a_set)
-                .assign x = a.ID + x
+                .assign x = x + 1
             .end if
         .end for
         .exit x
         '''
         
-        self.metamodel.new('A', ID=42);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-            
-        rc = self.eval_text(text)
-        self.assertEqual(0, rc)
+        for i in range(0, 10):
+            self.metamodel.new('A')
+            rc = self.eval_text(text)
+            self.assertEqual(i, rc)
         
-    def test_last_in_loop(self):
-        self.metamodel.define_class('A', [('ID', 'integer')])
+    def test_last_in_loop_count(self):
+        self.metamodel.define_class('A', [])
 
         text = '''
         .select many a_set from instances of A
         .assign x = 0
         .for each a in a_set
             .if (last a_set)
-                .assign x = a.ID + x
+                .assign x = x + 1
             .end if
         .end for
         .exit x
         '''
         
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=1);
-        self.metamodel.new('A', ID=42);
-            
-        rc = self.eval_text(text)
-        self.assertEqual(42, rc)
+        for _ in range(0, 10):
+            self.metamodel.new('A')
+            rc = self.eval_text(text)
+            self.assertEqual(1, rc)
         
-    def test_not_last_in_loop(self):
-        self.metamodel.define_class('A', [('ID', 'integer')])
+    def test_not_last_in_loop_count(self):
+        self.metamodel.define_class('A', [])
 
         text = '''
         .select many a_set from instances of A
         .assign x = 0
         .for each a in a_set
             .if (not_last a_set)
-                .assign x = a.ID + x
+                .assign x = x + 1
             .end if
         .end for
         .exit x
         '''
         
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=0);
-        self.metamodel.new('A', ID=42);
-            
+        for i in range(0, 10):
+            self.metamodel.new('A')
+            rc = self.eval_text(text)
+            self.assertEqual(i, rc)
+    
+    def test_first_in_loop(self):
+        self.metamodel.define_class('A', [])
+
+        text = '''
+        .select many a_set from instances of A
+        .assign loop_count = 0
+        .for each a in a_set
+            .if (first a_set)
+                .exit loop_count
+            .end if
+            .assign loop_count = (loop_count + 1)
+        .end for
+        .exit -1
+        '''
+        
+        for _ in range(0, 10):
+            self.metamodel.new('A')
+            rc = self.eval_text(text)
+            self.assertEqual(0, rc)
+        
+    def test_not_first_is_second_in_loop(self):
+        self.metamodel.define_class('A', [])
+
+        text = '''
+        .select many a_set from instances of A
+        .assign loop_count = 0
+        .for each a in a_set
+            .if (not_first a_set)
+                .exit loop_count
+            .end if
+            .assign loop_count = (loop_count + 1)
+        .end for
+        .exit loop_count
+        '''
+        
+        for _ in range(0, 10):
+            self.metamodel.new('A')
+            rc = self.eval_text(text)
+            self.assertEqual(1, rc)
+        
+    def test_last_in_loop(self):
+        self.metamodel.define_class('A', [])
+
+        text = '''
+        .select many a_set from instances of A
+        .assign loop_count = 0
+        .for each a in a_set
+            .if (last a_set)
+                .exit loop_count
+            .end if
+            .assign loop_count = (loop_count + 1)
+        .end for
+        .exit -1
+        '''
+        
+        for i in range(0, 10):
+            self.metamodel.new('A')
+            rc = self.eval_text(text)
+            self.assertEqual(i, rc)
+
+    def test_first_element_is_not_last_in_loop(self):
+        self.metamodel.define_class('A', [])
+
+        text = '''
+        .select many a_set from instances of A
+        .assign loop_count = 0
+        .for each a in a_set
+            .if (not_last a_set)
+                .exit loop_count
+            .end if
+            .assign loop_count = (loop_count + 1)
+        .end for
+        .exit -1
+        '''
+        
+        for _ in range(0, 5):
+            self.metamodel.new('A')
+        
         rc = self.eval_text(text)
         self.assertEqual(0, rc)
-        
+            
     def test_shadowing_selected(self):
         self.metamodel.define_class('A', [('ID', 'integer')])
         self.metamodel.define_class('B', [('ID', 'integer')])
