@@ -17,7 +17,7 @@ function install_ply {
 
 function install_pyxtuml {
     cd $TEMP_DIR
-    wget -qO - https://github.com/xtuml/pyxtuml/archive/$1.tar.gz | tar xzf -
+    wget -qO - https://github.com/$GITUSER/pyxtuml/archive/$1.tar.gz | tar xzf -
 
     cd pyxtuml-*
     ln -s $2/ply ply
@@ -28,7 +28,7 @@ function install_pyxtuml {
 
 function install_pyrsl {
     cd $TEMP_DIR
-    wget -qO - https://github.com/xtuml/pyrsl/archive/$1.tar.gz | tar xzf -
+    wget -qO - https://github.com/$GITUSER/pyrsl/archive/$1.tar.gz | tar xzf -
 
     cd pyrsl-*
     ln -s $2/ply ply
@@ -52,6 +52,7 @@ function make_executable {
 PLY=master
 PYXTUML=master
 PYRSL=master
+GITUSER=xtuml
 MAIN=""
 
 for i in "$@"
@@ -69,6 +70,10 @@ do
 	    PYRSL=$2
 	    shift 1
 	    ;;
+	-gituser)
+	    GITUSER=$2
+	    shift 1
+	    ;;
 	-main)
 	    MAIN=$2
 	    shift 1
@@ -81,6 +86,7 @@ do
 	    echo "  -ply <git tag or branch>      Bundle with a specific version of ply hosted on github.com/dabeaz/ply"
 	    echo "  -pyxtuml <git tag or branch>  Bundle with a specific version of pyxtuml hosted on github.com/xtuml/pyxtuml"
 	    echo "  -pyrsl <git tag or branch>    Bundle with a specific version of pyrsl hosted on github.com/xtuml/pyrsl"
+	    echo "  -gituser <github username>    GitHub username to find pyxtuml and pyrsl forks in.  Defaults to xtuml"
 	    echo "  -main <path>                  Provide a custom python entry point (__main__.py)."
 	    echo ""
 	    echo "Description:"

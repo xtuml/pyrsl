@@ -38,7 +38,7 @@ class EvalWalker(xtuml.tools.Walker):
         self.symtab.enter_scope()
                     
     def accept(self, node, **kwargs):
-        self.runtime.info.arch_file_name = node.filename
+        self.runtime.info.arch_file_path = node.filename
         self.runtime.info.arch_file_line = node.lineno
 
         try:
@@ -158,7 +158,11 @@ class EvalWalker(xtuml.tools.Walker):
     def accept_VariableAssignmentNode(self, node):
         assert isinstance(node, ast.VariableAssignmentNode)
         
-        setter = lambda val: self.symtab.install_symbol(node.name, val)
+        def setter(val):
+            if isinstance(val, xtuml.QuerySet):
+                val = xtuml.QuerySet(val)
+                        
+            self.symtab.install_symbol(node.name, val)
 
         return property(fset=setter)
         
@@ -269,8 +273,10 @@ class EvalWalker(xtuml.tools.Walker):
         
         try:
             self.symtab.enter_block()
-            for value in iter(self.symtab.find_symbol(node.set_name)):
-                self.symtab.install_symbol('selected', value)
+            handle = self.symtab.find_symbol(node.set_name)
+            for value in iter(handle):
+                iterator_name = '_%d' % id(handle)
+                self.symtab.install_symbol(iterator_name, value)
                 self.symtab.install_symbol(node.variable_name, value)
                 self.accept(node.statement_list)
             self.symtab.leave_block()
@@ -323,11 +329,11 @@ class EvalWalker(xtuml.tools.Walker):
             'not':         lambda value: not value,
             'cardinality': lambda value: self.runtime.cardinality(value),
             'empty':       lambda value: self.runtime.empty(value),
-            'first':       lambda value: self.runtime.first(self.symtab.find_symbol('selected'), value),
-            'last':        lambda value: self.runtime.last(self.symtab.find_symbol('selected'), value),
+            'first':       lambda value: self.runtime.first(self.symtab.find_symbol('_%d' % id(value)), value),
+            'last':        lambda value: self.runtime.last(self.symtab.find_symbol('_%d' % id(value)), value),
             'not_empty':   lambda value: self.runtime.not_empty(value),
-            'not_first':   lambda value: self.runtime.not_first(self.symtab.find_symbol('selected'), value),
-            'not_last':    lambda value: self.runtime.not_last(self.symtab.find_symbol('selected'), value),
+            'not_first':   lambda value: self.runtime.not_first(self.symtab.find_symbol('_%d' % id(value)), value),
+            'not_last':    lambda value: self.runtime.not_last(self.symtab.find_symbol('_%d' % id(value)), value),
         }
 
         value = self.accept(node.value).fget()
@@ -380,7 +386,7 @@ class EvalWalker(xtuml.tools.Walker):
 
         # search relative include paths
         else:
-            paths_to_search = [os.path.dirname(self.runtime.info.arch_file_name)]
+            paths_to_search = [self.runtime.info.arch_folder_path]
             paths_to_search.extend(self.includes)
             paths_to_search = filter(None, paths_to_search)
             
