@@ -19,7 +19,7 @@ import getpass
 from functools import partial
 
 import rsl.version
-import xtuml.model
+import xtuml
 
 try:
     from future_builtins import filter
@@ -44,11 +44,20 @@ class Info(object):
     Helper class for providing access to the built-in
     substitution variables "${info.date}" et.al.
     '''
+    arch_file_path = ''
+    arch_file_line = 0
+        
     def __init__(self, metamodel):
         self.metamodel = metamodel
-        self.arch_file_name = ''
-        self.arch_file_line = 0
-        
+    
+    @property
+    def arch_file_name(self):
+        return os.path.basename(self.arch_file_path)
+    
+    @property
+    def arch_folder_path(self):
+        return os.path.dirname(self.arch_file_path)
+    
     @property
     def date(self):
         now = datetime.datetime.now()
@@ -72,18 +81,20 @@ class Info(object):
         return os.name
 
 
-class Fragment(xtuml.model.BaseObject):
-    __r__ = dict()
-    __q__ = dict()
-    __c__ = dict()
+class MetaFragment(type):
+    cache = dict()
+    attributes = list()
+    
+
+class Fragment(xtuml.Class):
+    __metaclass__ = MetaFragment
     
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
-        xtuml.model.BaseObject.__init__(self)
+        xtuml.Class.__init__(self)
 
 
 class Runtime(object):
-
     bridges = dict()
     string_formatters = dict()
     
@@ -153,7 +164,7 @@ class Runtime(object):
         return Fragment(**return_values)
     
     def invoke_print(self, value, prefix='INFO'):
-        sys.stdout.write("%s: %d:  %s:  %s\n" % (os.path.basename(self.info.arch_file_name),
+        sys.stdout.write("%s: %d:  %s:  %s\n" % (self.info.arch_file_name,
                                                  self.info.arch_file_line,
                                                  prefix,
                                                  value))
@@ -164,8 +175,8 @@ class Runtime(object):
         
     @staticmethod
     def cast_to_set(value):
-        if not isinstance(value, xtuml.model.QuerySet):
-            return xtuml.model.QuerySet([value])
+        if not isinstance(value, xtuml.QuerySet):
+            return xtuml.QuerySet([value])
         else:
             return value
         
@@ -281,7 +292,8 @@ class Runtime(object):
     def select_one_in(inst_set, where_cond):
         cardinality = Runtime.cardinality(inst_set)
         if cardinality > 1:
-            raise RuntimeException('select one from a set with cardinality %d' % cardinality)
+            raise RuntimeException('select one from a set with cardinality %d' % 
+                                   cardinality)
         
         return Runtime.select_any_in(inst_set, where_cond)
                 
@@ -329,12 +341,13 @@ class Runtime(object):
 
     @staticmethod
     def is_instance(inst):
-        return isinstance(inst, xtuml.BaseObject)
+        return isinstance(inst, xtuml.Class)
 
     def assert_type(self, exptected_type, value):
         value_type = self.type_name(type(value))
         if exptected_type.upper() != value_type.upper():
-            raise RuntimeException('expected type %s, not %s' % (exptected_type, value_type))
+            raise RuntimeException('expected type %s, not %s' % 
+                                   (exptected_type, value_type))
         
     def type_name(self, ty):
         if   issubclass(ty, bool): return 'boolean'
@@ -342,14 +355,14 @@ class Runtime(object):
         elif issubclass(ty, float): return 'real'
         elif issubclass(ty, str): return 'string'
         elif issubclass(ty, Fragment): return 'frag_ref'
-        elif issubclass(ty, xtuml.BaseObject): return 'inst_ref'
+        elif issubclass(ty, xtuml.Class): return 'inst_ref'
         elif issubclass(ty, type(None)): return 'inst_ref'
         elif issubclass(ty, xtuml.QuerySet): return 'inst_ref_set'
         elif issubclass(ty, type(self.metamodel.id_generator.peek())): return 'unique_id'
         else: raise RuntimeException("Unknown type '%s'" % ty.__name__)
         
 
-class bridge(object):
+class Bridge(object):
     '''
     Decorator for adding bridges to the Runtime class.
     '''
@@ -375,7 +388,9 @@ class bridge(object):
         
         return f
     
-    
+bridge = Bridge
+
+
 @bridge('GET_ENV_VAR')
 def get_env_var(name):
     if name in os.environ:
@@ -457,7 +472,7 @@ def boolean_to_string(value):
     return {'result': str(value).upper()}  
 
 
-class string_formatter(object):
+class StringFormatter(object):
     '''
     Decorator for adding string formatters to the Runtime class.
     '''
@@ -475,6 +490,8 @@ class string_formatter(object):
         cls.string_formatters[name] = f
         
         return f
+
+string_formatter = StringFormatter
 
 
 @string_formatter('o')
@@ -612,7 +629,7 @@ def xml_name(value):
     return re.sub(regexp, '_', value)
 
 
-class navigation_parser(string_formatter):
+class NavigationParser(StringFormatter):
     '''
     Decorator for adding navigation formatters to the Runtime class.
     '''
@@ -628,6 +645,8 @@ class navigation_parser(string_formatter):
     def __call__(self, f):
         f = partial(self.parse_string, f)
         return string_formatter.__call__(self, f)
+
+navigation_parser = NavigationParser
 
 
 @navigation_parser('tcf_kl')
@@ -654,14 +673,16 @@ def remove_first_navigation_step(result):
     return result.string[result.end():]
 
 
-class backward_navigation_parser(navigation_parser):
+class BackwardNavigationParser(NavigationParser):
     '''
     Decorator for adding navigation formatters to the Runtime class.
     The parsing is done backwards, i.e. from right to left.
     '''
     regexp = re.compile(r"(\s*->\s*([\w]+)\[[Rr](\d+)(?:\.\'([^\']+)\')?\]\s*)$")
     
-    
+backward_navigation_parser = BackwardNavigationParser
+
+
 @backward_navigation_parser('tcb_kl')
 def last_key_letter(result):
     'Get the last key letter in a navigation'
