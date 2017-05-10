@@ -221,12 +221,31 @@ def main(argv=None):
         loader.filename_input(filename)
     
     id_generator = xtuml.IntegerGenerator()
-    metamodel = loader.build_metamodel(id_generator)
-
+    metamodel = xtuml.MetaModel(id_generator)
+    loader = xtuml.ModelLoader()
+    
     if diff_filename:
         with open(diff_filename, 'w') as f:
             f.write(' '.join(argv))
             f.write('\n')
+            
+    if enable_persistance and os.path.isfile(database_filename):
+        loader.filename_input(database_filename)
+        
+    for filename, kind in inputs:
+        if kind == 'sql':
+            loader.filename_input(filename)
+            
+        elif kind == 'arc':
+            loader.populate(metamodel)
+            rt = rsl.Runtime(metamodel, emit_when, force_overwrite, diff_filename)
+            ast = rsl.parse_file(filename)
+            rsl.evaluate(rt, ast, includes)
+            loader = xtuml.ModelLoader()
+            
+        else:
+            #should not happen
+            print("Unknown %s is of unknown kind '%s', skipping it" % (filename, kind))
 
     for filename in archetypes:
         rt = rsl.Runtime(metamodel, emit_when, force_overwrite, diff_filename)
