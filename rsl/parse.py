@@ -35,6 +35,7 @@ class RSLParser(object):
               'UNRELATE',
               'ACROSS',
               'FROM',
+              'USING',
               'OF',
               'IF',
               'TO',
@@ -404,6 +405,11 @@ class RSLParser(object):
         t.endlexpos = t.lexpos + len(t.value)
         return t
     
+    def t_control_USING(self, t):
+        r"(?i)using(?=\s)"
+        t.endlexpos = t.lexpos + len(t.value)
+        return t
+    
     def t_control_WHERE(self, t):
         r"(?i)where(?=[\s\(])"
         t.endlexpos = t.lexpos + len(t.value)
@@ -437,6 +443,12 @@ class RSLParser(object):
     def t_control_TYPE(self, t):
         r"(?i)(boolean|integer|real|string|inst_ref|inst_ref_set|frag_ref)(?=\s)"
         t.endlexpos = t.lexpos + len(t.value)
+        return t
+
+    def t_control_TYPE2(self, t):
+        r"(?i)(inst_ref|inst_ref_set|frag_ref)(?=<[^>]+>\s)"
+        t.endlexpos = t.lexpos + len(t.value)
+        t.type = 'TYPE'
         return t
     
     def t_control_AND(self, t):
@@ -918,6 +930,18 @@ class RSLParser(object):
         p[0].filename = self.filename
         p[0].lineno = p.lineno(0)
         
+    def p_relate_using_statement_1(self, p):
+        '''statement : RELATE inst_ref_var TO inst_ref_var ACROSS WORD USING inst_ref_var'''
+        p[0] = ast.RelateUsingNode(p[2], p[4], p[6], '', p[8])
+        p[0].filename = self.filename
+        p[0].lineno = p.lineno(0)
+        
+    def p_relate_using_statement_2(self, p):
+        '''statement : RELATE inst_ref_var TO inst_ref_var ACROSS WORD DOT PHRASE USING inst_ref_var'''
+        p[0] = ast.RelateUsingNode(p[2], p[4], p[6], p[8], p[10])
+        p[0].filename = self.filename
+        p[0].lineno = p.lineno(0)
+        
     def p_unrelate_statement_1(self, p):
         '''statement : UNRELATE inst_ref_var FROM inst_ref_var ACROSS WORD'''
         p[0] = ast.UnrelateNode(p[2], p[4], p[6], '')
@@ -930,6 +954,18 @@ class RSLParser(object):
         p[0].filename = self.filename
         p[0].lineno = p.lineno(0)
     
+    def p_unrelate_statement_using_1(self, p):
+        '''statement : UNRELATE inst_ref_var FROM inst_ref_var ACROSS WORD USING inst_ref_var'''
+        p[0] = ast.UnrelateUsingNode(p[2], p[4], p[6], '', p[8])
+        p[0].filename = self.filename
+        p[0].lineno = p.lineno(0)
+        
+    def p_unrelate_statement_using_2(self, p):
+        '''statement : UNRELATE inst_ref_var FROM inst_ref_var ACROSS WORD DOT PHRASE USING inst_ref_var'''
+        p[0] = ast.UnrelateUsingNode(p[2], p[4], p[6], p[8], p[10])
+        p[0].filename = self.filename
+        p[0].lineno = p.lineno(0)
+        
     def p_whereclause_1(self, p):
         """whereclause : """
         p[0] = ast.WhereNode()
@@ -949,13 +985,25 @@ class RSLParser(object):
         p[0].lineno = p.lineno(0)
     
     def p_fparameters_3(self, p):
-        """fparameters : fparameters PARAM TYPE param_name lineabreak"""
+        """fparameters : fparameters PARAM param_type param_name lineabreak"""
         p[0] = p[1]
         param = ast.ParameterNode(p[3], p[4])
         param.filename = self.filename
         param.lineno = p.lineno(2)
         p[0].parameters.append(param)
     
+    def p_param_type_1(self, p):
+        '''
+        param_type : TYPE
+        '''
+        p[0] = ast.ParameterTypeNode(p[1])
+    
+    def p_param_type_2(self, p):
+        '''
+        param_type : TYPE LT function_identifier GT
+        '''
+        p[0] = ast.ParameterTypeNode(p[1], p[3])
+     
     def p_fbody_0(self, p):
         """fbody : """
         p[0] = ast.StatementListNode()
