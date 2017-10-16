@@ -6,6 +6,7 @@ Abstract syntax tree node definitions for the rule-specification language (RSL).
 
 
 class Node(object):
+    filename = None
     lineno = 0
     
     def __str__(self):
@@ -89,7 +90,7 @@ class ParseKeywordNode(Node):
         return (self.expr, self.keyword)
 
 #
-# FUnction related nodes
+# Function related nodes
 #
 
 class FunctionNode(Node):
@@ -372,10 +373,6 @@ class DeleteNode(Node):
     
     def __init__(self, variable_name):
         self.variable_name = variable_name
-
-    @property
-    def children(self):
-        return (self.variable_name,)
 
 
 class WhereNode(Node):
