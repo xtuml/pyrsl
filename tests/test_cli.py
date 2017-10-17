@@ -97,7 +97,7 @@ class TestCommandLineInterface(unittest.TestCase):
         modeldata = self.temp_file(mode='w')
         script = self.temp_file(mode='w')
         
-        schema.file.write('CREATE TABLE Cls (Id STRING);')
+        schema.file.write('CREATE TABLE Cls (Id STRING, OtherAttr INTEGER);')
         schema.file.write('CREATE UNIQUE INDEX I1 ON Cls (Id);')
         schema.file.flush()
         
@@ -113,9 +113,10 @@ class TestCommandLineInterface(unittest.TestCase):
                 '-import', schema.name,
                 '-import', modeldata.name,
                 '-arch', script.name]
+        rsl.main(argv)
         
         output = sys.stdout.getvalue().strip()
-        self.assertIn('WARNING:xtuml.load', output)
+        self.assertNotIn('Setting flag to ignore INSERT mismatches.', output)
         self.assertIn('Hello', output)
     
         argv = ['test_qim', 
@@ -124,9 +125,10 @@ class TestCommandLineInterface(unittest.TestCase):
                 '-import', schema.name,
                 '-import', modeldata.name,
                 '-arch', script.name]
-        
+        rsl.main(argv)
+         
         output = sys.stdout.getvalue().strip()
-        self.assertNotIn('WARNING:xtuml.load', output)
+        self.assertIn('Setting flag to ignore INSERT mismatches.', output)
         self.assertIn('Hello', output)
 
     def test_include(self):
