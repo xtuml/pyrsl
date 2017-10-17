@@ -145,7 +145,7 @@ def main(argv=None):
     includes = ['.']
     check_integrity = False
     argv = argv or sys.argv
-    quietInsertMismatch = False
+    quiet_insert_mismatch = False
     
     i = 1
     while i < len(argv):
@@ -188,7 +188,7 @@ def main(argv=None):
             
         elif argv[i] == '-qim':
             print("Setting flag to ignore INSERT mismatches.")
-            quietInsertMismatch = True
+            quiet_insert_mismatch = True
             
         elif argv[i] == '-version':
             print(rsl.version.complete_string)
@@ -224,8 +224,9 @@ def main(argv=None):
     metamodel = xtuml.MetaModel(id_generator)
     loader = xtuml.ModelLoader()
     
-    if quietInsertMismatch:
-        loader.dontWarnInsertMismatch()
+    if quiet_insert_mismatch:
+        load_logger = logging.getLogger(xtuml.load.__name__)
+        load_logger.setLevel(logging.ERROR)
 
     if diff_filename:
         with open(diff_filename, 'w') as f:
@@ -245,8 +246,6 @@ def main(argv=None):
             ast = rsl.parse_file(filename)
             rsl.evaluate(rt, ast, includes)
             loader = xtuml.ModelLoader()
-            if quietInsertMismatch:
-                loader.dontWarnInsertMismatch()
             
         else:
             #should not happen
