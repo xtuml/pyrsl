@@ -92,6 +92,43 @@ class TestCommandLineInterface(unittest.TestCase):
         script.file.flush()
         self.assertEqual(1, rsl.main(argv))
     
+    def test_qim(self):
+        schema = self.temp_file(mode='w')
+        modeldata = self.temp_file(mode='w')
+        script = self.temp_file(mode='w')
+        
+        schema.file.write('CREATE TABLE Cls (Id STRING, OtherAttr INTEGER);')
+        schema.file.write('CREATE UNIQUE INDEX I1 ON Cls (Id);')
+        schema.file.flush()
+        
+        modeldata.file.write('INSERT INTO Cls VALUES ("myid");')
+        modeldata.file.flush()
+        
+        script.file.write('.create object instance cls of Cls\n')
+        script.file.write('.print "Hello"\n')
+        script.file.flush()
+        
+        argv = ['test_qim', 
+                '-nopersist',
+                '-import', schema.name,
+                '-import', modeldata.name,
+                '-arch', script.name]
+        rsl.main(argv)
+        
+        output = sys.stdout.getvalue().strip()
+        self.assertIn('Hello', output)
+    
+        argv = ['test_qim', 
+                '-nopersist',
+                '-qim',
+                '-import', schema.name,
+                '-import', modeldata.name,
+                '-arch', script.name]
+        rsl.main(argv)
+         
+        output = sys.stdout.getvalue().strip()
+        self.assertIn('Hello', output)
+
     def test_include(self):
         script = self.temp_file(mode='w')
         script.file.write('.print "Hello"\n')
