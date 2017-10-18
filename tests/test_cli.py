@@ -116,7 +116,6 @@ class TestCommandLineInterface(unittest.TestCase):
         rsl.main(argv)
         
         output = sys.stdout.getvalue().strip()
-        self.assertNotIn('Setting flag to ignore INSERT mismatches.', output)
         self.assertIn('Hello', output)
     
         argv = ['test_qim', 
@@ -128,7 +127,6 @@ class TestCommandLineInterface(unittest.TestCase):
         rsl.main(argv)
          
         output = sys.stdout.getvalue().strip()
-        self.assertIn('Setting flag to ignore INSERT mismatches.', output)
         self.assertIn('Hello', output)
 
     def test_include(self):

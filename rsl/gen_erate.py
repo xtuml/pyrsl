@@ -187,7 +187,6 @@ def main(argv=None):
             loglevel = logging.DEBUG
             
         elif argv[i] == '-qim':
-            print("Setting flag to ignore INSERT mismatches.")
             quiet_insert_mismatch = True
             
         elif argv[i] == '-version':
