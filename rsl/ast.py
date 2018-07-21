@@ -295,7 +295,15 @@ class SelectAnyInstanceNode(SelectFromNode):
 
 
 class SelectManyInstanceNode(SelectFromNode):
-    pass
+    order_by = None
+
+    def __init__(self, variable_name, key_letter, where, order_by):
+        super(SelectManyInstanceNode, self).__init__(variable_name, key_letter, where)
+        self.order_by = order_by
+
+    @property
+    def children(self):
+        return (self.where, self.order_by)
 
 
 class SelectOneNode(SelectNode):
@@ -307,7 +315,15 @@ class SelectAnyNode(SelectNode):
 
 
 class SelectManyNode(SelectNode):
-    pass
+    order_by = None
+
+    def __init__(self, variable_name, instance_chain, where, order_by):
+        super(SelectManyNode, self).__init__(variable_name, instance_chain, where)
+        self.order_by = order_by
+
+    @property
+    def children(self):
+        return (self.where, self.order_by)
 
 
 class RelateNode(Node):
@@ -385,6 +401,18 @@ class WhereNode(Node):
     def children(self):
         return (self.expr,)
         
+class OrderByNode(Node):
+    reverse = False
+    attributes = None
+    
+    def __init__(self, reverse=False):
+        self.reverse = reverse
+        self.attributes = list()
+
+    @property
+    def children(self):
+        return iter(self.attributes)
+
 
 class InstanceChainNode(Node):
     variable = None
