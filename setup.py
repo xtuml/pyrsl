@@ -116,7 +116,7 @@ with open(path.join(this_directory, 'README.rst')) as f:
     long_description = f.read()
 
 opts = dict(name='pyrsl',
-            version='2.1.0', # ensure that this is the same as in rsl.version
+            version='2.1.1', # ensure that this is the same as in rsl.version
             description='Interpreter for the Rule Specification Language (RSL)',
             long_description=long_description,
             long_description_content_type='text/x-rst',
