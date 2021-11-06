@@ -20,7 +20,7 @@ class TestPrint(RSLTestCase):
         except AttributeError:
             s, _ = self.capfd.readouterr()
             output = s.strip()
-        self.assertEquals(output, "test_print.test_print_string: 2:  INFO:  Hello world!")
+        self.assertEqual(output, "test_print.test_print_string: 2:  INFO:  Hello world!")
         
     @evaluate_docstring
     def test_print_substitution_variable(self, rc):
@@ -33,7 +33,7 @@ class TestPrint(RSLTestCase):
         except AttributeError:
             s, _ = self.capfd.readouterr()
             output = s.strip()
-        self.assertEquals(output, "test_print.test_print_substitution_variable: 3:  INFO:  Hello world!")
+        self.assertEqual(output, "test_print.test_print_substitution_variable: 3:  INFO:  Hello world!")
         
     @evaluate_docstring
     def test_print_double_dollar(self, rc):
@@ -46,7 +46,7 @@ class TestPrint(RSLTestCase):
         except AttributeError:
             s, _ = self.capfd.readouterr()
             output = s.strip()
-        self.assertEquals(output, "test_print.test_print_double_dollar: 3:  INFO:  Hello $world!")
+        self.assertEqual(output, "test_print.test_print_double_dollar: 3:  INFO:  Hello $world!")
 
     @pytest.fixture(autouse=True)
     def capfd(self, capfd):

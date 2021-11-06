@@ -15,7 +15,12 @@ class TestEmit(RSLTestCase):
         .emit to file "/tmp/RSLTestCase"'''
         
         with open("/tmp/RSLTestCase") as f:
-            self.assertRegexpMatches(f.read(), "Hello world\n")
+            try:
+                # python 3.x
+                self.assertRegex(f.read(), "Hello world\n")
+            except AttributeError:
+                # python 2.7
+                self.assertRegexpMatches(f.read(), "Hello world\n")
         
     def test_emit_without_linebreak_case1(self):
         text = 'Hello ' + '\\' + '\n' + 'world' + '\n' 
