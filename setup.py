@@ -110,9 +110,16 @@ class BundleCommand(Command):
         logger.info('Bundle successfully saved to %s', self.output)
 
 
+from os import path
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, 'README.rst')) as f:
+    long_description = f.read()
+
 opts = dict(name='pyrsl',
             version='2.1.0', # ensure that this is the same as in rsl.version
             description='Interpreter for the Rule Specification Language (RSL)',
+            long_description=long_description,
+            long_description_content_type='text/x-rst',
             author='John Törnblom',
             author_email='john.tornblom@gmail.com',
             url='https://github.com/xtuml/pyrsl',
