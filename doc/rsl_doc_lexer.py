@@ -100,6 +100,6 @@ class RSLLexer(RegexLexer):
 
 
 def setup(app):
-    app.add_lexer("pyrsl", RSLLexer())
+    app.add_lexer("pyrsl", RSLLexer)
 
 
