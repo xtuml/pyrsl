@@ -2,6 +2,7 @@
 # Copyright (C) 2015 John Törnblom
 
 import sys
+import pytest
 
 from utils import RSLTestCase
 from utils import evaluate_docstring
@@ -14,7 +15,11 @@ class TestPrint(RSLTestCase):
         '''
         .print "Hello world!"
         '''
-        output = sys.stdout.getvalue().strip()
+        try:
+            output = sys.stdout.getvalue().strip()
+        except AttributeError:
+            s, _ = self.capfd.readouterr()
+            output = s.strip()
         self.assertEquals(output, "test_print.test_print_string: 2:  INFO:  Hello world!")
         
     @evaluate_docstring
@@ -23,7 +28,11 @@ class TestPrint(RSLTestCase):
         .assign s = "world"
         .print "Hello ${s}!"
         '''
-        output = sys.stdout.getvalue().strip()
+        try:
+            output = sys.stdout.getvalue().strip()
+        except AttributeError:
+            s, _ = self.capfd.readouterr()
+            output = s.strip()
         self.assertEquals(output, "test_print.test_print_substitution_variable: 3:  INFO:  Hello world!")
         
     @evaluate_docstring
@@ -32,9 +41,13 @@ class TestPrint(RSLTestCase):
         .assign s = "$$world"
         .print "Hello ${s}!"
         '''
-        output = sys.stdout.getvalue().strip()
+        try:
+            output = sys.stdout.getvalue().strip()
+        except AttributeError:
+            s, _ = self.capfd.readouterr()
+            output = s.strip()
         self.assertEquals(output, "test_print.test_print_double_dollar: 3:  INFO:  Hello $world!")
-        
-        
-        
 
+    @pytest.fixture(autouse=True)
+    def capfd(self, capfd):
+        self.capfd = capfd
