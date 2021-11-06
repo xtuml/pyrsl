@@ -7,6 +7,7 @@ import sys
 import os
 import stat
 import logging
+import pytest
 
 try:
     # python2
@@ -63,7 +64,11 @@ class TestCommandLineInterface(unittest.TestCase):
         argv = ['test_invalid_arguments', 
                 'some', 'more']
         self.assertRaises(SystemExit, rsl.main, argv)
-        output = sys.stdout.getvalue().strip()
+        try:
+            output = sys.stdout.getvalue().strip()
+        except AttributeError:
+            s, _ = self.capfd.readouterr()
+            output = s.strip()
         self.assertIn('ERROR', output)
     
     def test_help(self):
@@ -71,7 +76,11 @@ class TestCommandLineInterface(unittest.TestCase):
                 '-h']
         
         self.assertRaises(SystemExit, rsl.main, argv)
-        output = sys.stdout.getvalue().strip()
+        try:
+            output = sys.stdout.getvalue().strip()
+        except AttributeError:
+            s, _ = self.capfd.readouterr()
+            output = s.strip()
         self.assertIn('USAGE', output)
     
     def test_version(self):
@@ -79,7 +88,11 @@ class TestCommandLineInterface(unittest.TestCase):
                 '-version']
         
         self.assertRaises(SystemExit, rsl.main, argv)
-        output = sys.stdout.getvalue().strip()
+        try:
+            output = sys.stdout.getvalue().strip()
+        except AttributeError:
+            s, _ = self.capfd.readouterr()
+            output = s.strip()
         self.assertIn(rsl.version.complete_string, output)
         
     def test_integrity(self):
@@ -153,7 +166,11 @@ class TestCommandLineInterface(unittest.TestCase):
                 '-nopersist']
         
         rsl.main(argv)
-        output = sys.stdout.getvalue().strip()
+        try:
+            output = sys.stdout.getvalue().strip()
+        except AttributeError:
+            s, _ = self.capfd.readouterr()
+            output = s.strip()
         self.assertIn('Hello', output)
 
     def test_nopersist(self):
@@ -169,7 +186,11 @@ class TestCommandLineInterface(unittest.TestCase):
                 '-nopersist']
         
         rsl.main(argv)
-        output = sys.stdout.getvalue().strip()
+        try:
+            output = sys.stdout.getvalue().strip()
+        except AttributeError:
+            s, _ = self.capfd.readouterr()
+            output = s.strip()
         self.assertIn('Hello', output)
         self.assertFalse(os.path.exists(db_filename))
     
@@ -191,7 +212,11 @@ class TestCommandLineInterface(unittest.TestCase):
                 '-arch', script.name]
         
         rsl.main(argv)
-        output = sys.stdout.getvalue().strip()
+        try:
+            output = sys.stdout.getvalue().strip()
+        except AttributeError:
+            s, _ = self.capfd.readouterr()
+            output = s.strip()
         self.assertIn('Hello', output)
         
         with open(db.name, 'r') as f:
@@ -277,6 +302,10 @@ class TestCommandLineInterface(unittest.TestCase):
         with open(dump.name, 'r') as f:
             s = f.read()
             self.assertIn('INSERT INTO Person', s)
+
+    @pytest.fixture(autouse=True)
+    def capfd(self, capfd):
+        self.capfd = capfd
 
 
 if __name__ == "__main__":
