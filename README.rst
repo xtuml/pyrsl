@@ -24,8 +24,7 @@ License
 ~~~~~~~
 pyrsl is licensed under the GPLv3, see LICENSE for more information.
 
-.. |Build Status| image:: https://travis-ci.org/xtuml/pyrsl.svg?branch=master
-   :target: https://travis-ci.org/xtuml/pyrsl
+.. |Build Status| image:: https://github.com/xtuml/pyrsl/actions/workflows/run-tests.yaml/badge.svg
 .. |Coverage Status| image:: https://coveralls.io/repos/xtuml/pyrsl/badge.svg?branch=master
    :target: https://coveralls.io/r/xtuml/pyrsl?branch=master
 
