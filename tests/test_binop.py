@@ -14,7 +14,7 @@ class TestBinaryOperation(RSLTestCase):
     @evaluate_docstring
     def test_plus(self, rc):
         '.exit 1 + 1'
-        self.assertEqual(2, rc)
+        self.assertEqual(1, rc)
         
     @evaluate_docstring
     def test_minus(self, rc):
