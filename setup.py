@@ -137,6 +137,7 @@ opts = dict(name='pyrsl',
             data_files = [('share/gtksourceview-3.0/language-specs',
                            ['editors/gtksourceview/rsl.lang'])],
             requires=['ply', 'xtuml'],
+            setup_requires=['ply', 'pyxtuml'],
             cmdclass={'build_py': BuildCommand,
                       'bundle': BundleCommand,
                       'test': TestCommand})
