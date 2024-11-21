@@ -14,12 +14,8 @@ from rsl import string_formatter
 
 @bridge('HASH.MD5')
 def hash_md5(s):
-    try:
-        result = hashlib.md5(s).hexdigest()
-        success = True
-    except:
-        result = ''
-        success = False
+    result = hashlib.md5(s.encode('utf-8')).hexdigest()
+    success = True
 
     return {'success': success,
             'result': result}
@@ -40,7 +36,12 @@ def remove_quot(s):
     return s[first_index:last_index]
 
 
-print('Running my custom version of gen_erate')
-rc = gen_erate.main()
-sys.exit(rc)
+def main():
+    print('Running my custom version of gen_erate')
+    rc = gen_erate.main()
+    sys.exit(rc)
+
+
+if __name__ == '__main__':
+    main()
 

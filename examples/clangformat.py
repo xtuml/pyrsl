@@ -19,7 +19,7 @@ def format_cpp(s):
     proc = subprocess.Popen('clang-format',
                             stdout=subprocess.PIPE,
                             stdin=subprocess.PIPE)
-    proc.stdin.write(s)
+    proc.stdin.write(s.encode('utf-8'))
     proc.stdin.close()
     res = proc.stdout.read()
     proc.wait()
@@ -27,10 +27,14 @@ def format_cpp(s):
     if proc.returncode:
         return s
     else:
-        return res
+        return res.decode('utf-8')
 
 
-print('Running my custom version of gen_erate')
-rc = gen_erate.main()
-sys.exit(rc)
+def main():
+    print('Running my custom version of gen_erate')
+    rc = gen_erate.main()
+    sys.exit(rc)
 
+
+if __name__ == '__main__':
+    main()

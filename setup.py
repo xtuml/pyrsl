@@ -3,56 +3,16 @@
 # Copyright (C) 2015 John Törnblom
 
 import logging
-import unittest
-import os
-import sys
-import stat
-import zipfile
 
 from setuptools import setup
-from setuptools import Command
-from setuptools.command.build_py import build_py
 
-
-logger = logging.getLogger('setup')
 logging.basicConfig(level=logging.DEBUG)
-
-
-class BuildCommand(build_py):
-    
-    def run(self):
-        import rsl
-
-        rsl.parse_text('', '')
-        build_py.run(self)
-
-
-class TestCommand(Command):
-    description = "Execute unit tests"
-    user_options = [('name=', None, 'Limit testing to a single test case or test method')]
-
-    def initialize_options(self):
-        self.name = None
-    
-    def finalize_options(self):
-        if self.name and not self.name.startswith('tests.'):
-            self.name = 'tests.' + self.name
-
-    def run(self):
-        if self.name:
-            suite = unittest.TestLoader().loadTestsFromName(self.name)
-        else:
-            suite = unittest.TestLoader().discover('tests')
-        
-        runner = unittest.TextTestRunner(verbosity=2, buffer=True)
-        exit_code = not runner.run(suite).wasSuccessful()
-        sys.exit(exit_code)
-
 
 from os import path
 this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, 'README.rst')) as f:
     long_description = f.read()
+
 
 setup(name='pyrsl',
     version='3.0.0', # ensure that this is the same as in rsl.version
@@ -68,14 +28,15 @@ setup(name='pyrsl',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Interpreters',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6'],
+        'Programming Language :: Python :: 3 :: Only'],
     keywords='rsl xtuml bridgepoint',
-    packages=['rsl'],
+    packages=['rsl', 'examples'],
     data_files = [('share/gtksourceview-3.0/language-specs',
                     ['editors/gtksourceview/rsl.lang'])],
-    requires=['ply', 'xtuml'],
-    setup_requires=['ply', 'pyxtuml'],
-    cmdclass={'build_py': BuildCommand,
-                'test': TestCommand})
+    requires=['ply', 'pyxtuml'],
+    install_requires=['ply', 'pyxtuml'],
+    setup_requires=['ply', 'pyxtuml'])
+
+# assure PLY parstab and lextab get generated
+import rsl
+rsl.parse_text('')
