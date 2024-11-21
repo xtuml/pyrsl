@@ -1,9 +1,0 @@
-from py2exe import freeze
-
-freeze(console=[{'script': 'rsl/gen_erate.py'}],
-    options={
-       'packages': ['rsl'],
-       'compressed': 1,
-       'optimize': 2,
-       'bundle_files': 1
-    })

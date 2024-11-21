@@ -20,14 +20,14 @@ jobs:
       - name: Set up Python 3
         uses: actions/setup-python@v4
         with:
-          python-version: 3.11 # py2exe is not supported on python>=3.12
+          python-version: 3.x
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
-          python -m pip install py2exe
+          python -m pip install pyinstaller
       - name: Build gen_erate.exe
-        run: python freeze.py
+        run: pyinstaller -F rsl/gen_erate.py
       - name: Upload gen_erate.exe
         uses: actions/upload-artifact@v4
         with:
