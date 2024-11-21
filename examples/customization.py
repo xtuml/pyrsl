@@ -14,8 +14,12 @@ from rsl import string_formatter
 
 @bridge('HASH.MD5')
 def hash_md5(s):
-    result = hashlib.md5(s.encode('utf-8')).hexdigest()
-    success = True
+    try:
+        result = hashlib.md5(s).hexdigest()
+        success = True
+    except:
+        result = ''
+        success = False
 
     return {'success': success,
             'result': result}

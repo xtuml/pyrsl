@@ -26,22 +26,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           python -m pip install pyinstaller
-      - name: Build gen_erate.exe
-        run: pyinstaller -F rsl/gen_erate.py
-      - name: Upload gen_erate.exe
-        uses: actions/upload-artifact@v4
-        with:
-          name: gen_erate.exe
-          path: dist/gen_erate.exe
-      # - name: Upload gen_erate.exe
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.get_release.outputs.upload_url }}
-      #     asset_path: dist/gen_erate.exe
-      #     asset_name: gen_erate.exe
-      #     asset_content_type: application/octet-stream
       - name: Build gen_erate.pyz
         run: |
           python -m pip install --upgrade --target dist .
@@ -60,3 +44,19 @@ jobs:
         with:
           name: gen_erate.pyz
           path: gen_erate.pyz
+      - name: Build gen_erate.exe
+        run: pyinstaller -F rsl/gen_erate.py
+      - name: Upload gen_erate.exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: gen_erate.exe
+          path: dist/gen_erate.exe
+      # - name: Upload gen_erate.exe
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.get_release.outputs.upload_url }}
+      #     asset_path: dist/gen_erate.exe
+      #     asset_name: gen_erate.exe
+      #     asset_content_type: application/octet-stream
