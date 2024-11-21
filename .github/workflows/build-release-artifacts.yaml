@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gen_erate.exe
-          path: gen_erate.exe
+          path: dist/gen_erate.exe
       # - name: Upload gen_erate.exe
       #   uses: actions/upload-release-asset@v1
       #   env:
