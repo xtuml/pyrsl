@@ -9,12 +9,7 @@ import stat
 import logging
 import pytest
 
-try:
-    # python2
-    from StringIO import StringIO
-except ImportError:
-    # python3
-    from io import StringIO
+from io import StringIO
     
 import rsl
 

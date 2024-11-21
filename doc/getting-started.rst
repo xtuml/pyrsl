@@ -20,7 +20,7 @@ Optionally, the .pyz file may be added to your PYTHONPATH:
     $ export PYTHONPATH=some/path/gen_erate.pyz
     $ python -m rsl.gen_erate -h
 
-pyrsl is also available from pypi:
+pyrsl is also available from PyPI:
 
 ::
 
@@ -52,3 +52,7 @@ in the original RSL interpreter:
 For more information, see the help text by appending -h to the command line
 when executing gen_erate.
 
+Character encoding
+------------------
+
+pyrsl requires all inputs to be UTF-8 encoded.

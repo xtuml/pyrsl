@@ -40,7 +40,12 @@ def remove_quot(s):
     return s[first_index:last_index]
 
 
-print('Running my custom version of gen_erate')
-rc = gen_erate.main()
-sys.exit(rc)
+def main():
+    print('Running my custom version of gen_erate')
+    rc = gen_erate.main()
+    sys.exit(rc)
+
+
+if __name__ == '__main__':
+    main()
 
