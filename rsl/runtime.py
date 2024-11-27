@@ -21,15 +21,7 @@ from functools import partial
 import rsl.version
 import xtuml
 
-try:
-    from future_builtins import filter
-except ImportError:
-    pass
-
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import StringIO
 
 
 logger = logging.getLogger(__name__)
