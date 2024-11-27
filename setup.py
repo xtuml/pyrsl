@@ -15,7 +15,7 @@ with open(path.join(this_directory, 'README.rst')) as f:
 
 
 setup(name='pyrsl',
-    version='2.1.1', # ensure that this is the same as in rsl.version
+    version='3.0.0', # ensure that this is the same as in rsl.version
     description='Interpreter for the Rule Specification Language (RSL)',
     long_description=long_description,
     long_description_content_type='text/x-rst',
