@@ -37,15 +37,14 @@ for more information.
 
 Bundling gen_erate for Windows
 ******************************
-TODO
 
-**gen_erate.exe** may be produced by issuing the following command
-on a windows machine where python, ply and pyrsl are installed:
+**gen_erate.exe** may be produced by issuing the following commands from the
+root of the repository on a Windows machine where ``python3`` is installed:
 
 ::
 
-    $ python setup.py py2exe -O2 -c -b1 -p xtuml,rsl
+    $ python -m pip install pyinstaller
+    $ python -m pip install .
+    $ pyinstaller gen_erate.spec
 
-Note that binaries produced by py2exe depend on MSVCR90.dll which is distributed
-with the `Microsoft Visual C++ 2008 Redistributable Package
-<https://www.microsoft.com/en-us/download/details.aspx?id=29>`__
+More details on the usage of ``pyinstaller`` can be found `here <https://pyinstaller.org/en/stable/>`__.
